@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe-Layer - Advanced Network Firewall</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-darker: #050508;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a25;
+            --bg-input: #0d0d14;
+            --border-dark: #1e1e2d;
+            --border-light: #2a2a3d;
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --accent-cyan: #22d3ee;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-purple: #a855f7;
+            --accent-pink: #ec4899;
+            --text-white: #ffffff;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-dark: #64748b;
+            --glow-primary: rgba(99, 102, 241, 0.4);
+            --glow-cyan: rgba(34, 211, 238, 0.4);
+            --glow-green: rgba(16, 185, 129, 0.4);
+            --glow-red: rgba(239, 68, 68, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background Effects */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow-1 {
+            top: -200px;
+            left: -200px;
+            background: var(--primary);
+        }
+
+        .bg-glow-2 {
+            bottom: -200px;
+            right: -200px;
+            background: var(--accent-cyan);
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-dark);
+            padding: 0 30px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            box-shadow: 0 0 30px var(--glow-primary);
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(10px);
+        }
+
+        .logo-text h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-white), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 40px;
+        }
+
+        .header-stat {
+            text-align: center;
+        }
+
+        .header-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-stat-label {
+            font-size: 10px;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 50px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--glow-green);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; box-shadow: 0 0 15px var(--glow-green); }
+            50% { opacity: 0.7; box-shadow: 0 0 25px var(--glow-green); }
+        }
+
+        .header-status span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-green);
+        }
+
+        .header-status.disabled {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .header-status.disabled .status-indicator {
+            background: var(--accent-red);
+            box-shadow: 0 0 15px var(--glow-red);
+            animation: none;
+        }
+
+        .header-status.disabled span {
+            color: var(--accent-red);
+        }
+
+        /* Firewall Toggle Switch */
+        .firewall-toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50px;
+        }
+
+        .toggle-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toggle-status {
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 28px;
+        }
+
+        .toggle-status.on {
+            color: var(--accent-green);
+        }
+
+        .toggle-status.off {
+            color: var(--accent-red);
+        }
+
+        .firewall-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .firewall-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .firewall-switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--accent-red);
+            transition: 0.3s;
+            border-radius: 28px;
+            box-shadow: 0 0 15px var(--glow-red);
+        }
+
+        .firewall-switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .firewall-switch input:checked + .slider {
+            background: var(--accent-green);
+            box-shadow: 0 0 15px var(--glow-green);
+        }
+
+        .firewall-switch input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Main Layout */
+        .main-wrapper {
+            display: flex;
+            min-height: calc(100vh - 70px);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(18, 18, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-dark);
+            padding: 25px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-group {
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .nav-group-title {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 0 16px;
+            margin-bottom: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-muted);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, var(--primary), var(--accent-cyan));
+            border-radius: 0 3px 3px 0;
+            transition: height 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(99, 102, 241, 0.08);
+            color: var(--text-light);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(34, 211, 238, 0.1));
+            color: var(--text-white);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .nav-item.active::before {
+            height: 24px;
+        }
+
+        .nav-item i {
+            width: 20px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .nav-item.active i {
+            color: var(--accent-cyan);
+        }
+
+        .nav-item span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(18, 18, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-dark);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--border-light);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .card-title-icon.primary {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-light);
+        }
+
+        .card-title-icon.cyan {
+            background: rgba(34, 211, 238, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        .card-title-icon.red {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+        }
+
+        .card-title-icon.green {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+
+        .card-title h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .card-title p {
+            font-size: 12px;
+            color: var(--text-dark);
+            margin-top: 2px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 20px var(--glow-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--glow-primary);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-green), #059669);
+            color: white;
+            box-shadow: 0 4px 20px var(--glow-green);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--glow-green);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-red), #dc2626);
+            color: white;
+            box-shadow: 0 4px 20px var(--glow-red);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--glow-red);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 12px;
+        }
+
+        /* Input Group */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--glow-primary);
+        }
+
+        .input-wrapper input::placeholder {
+            color: var(--text-dark);
+        }
+        
+        /* Protocol Select */
+        .protocol-select {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+        }
+        
+        .protocol-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--glow-primary);
+        }
+        
+        .protocol-select option {
+            background: var(--bg-input);
+            color: var(--text-white);
+        }
+
+        /* Output Box */
+        .output-box {
+            background: var(--bg-darker);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            max-height: 350px;
+            overflow-y: auto;
+            color: var(--accent-cyan);
+            white-space: pre-wrap;
+        }
+
+        .output-box.error {
+            color: var(--accent-red);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        /* Stat Cards Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: rgba(18, 18, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-4px);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card-icon.blue {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-light);
+        }
+
+        .stat-card-icon.cyan {
+            background: rgba(34, 211, 238, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        .stat-card-icon.green {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+
+        .stat-card-icon.red {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+        }
+
+        .stat-card-icon.purple {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .stat-card-value {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-white);
+            margin-bottom: 4px;
+        }
+
+        .stat-card-label {
+            font-size: 12px;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-dark);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(99, 102, 241, 0.08);
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-dark);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-primary {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-light);
+        }
+
+        .badge-cyan {
+            background: rgba(34, 211, 238, 0.15);
+            color: var(--accent-cyan);
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-yellow);
+        }
+
+        /* Capture Status */
+        .capture-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .capture-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-dark);
+            border-radius: 50px;
+        }
+
+        .capture-status-badge.active {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .capture-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-dark);
+        }
+
+        .capture-status-badge.active .capture-dot {
+            background: var(--accent-green);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Blocked Items */
+        .blocked-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .blocked-item:hover {
+            border-color: var(--accent-red);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .blocked-item-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .blocked-item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(239, 68, 68, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-red);
+        }
+
+        .blocked-item-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .blocked-item-type {
+            font-size: 11px;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* Interface Cards */
+        .interface-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .interface-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+        }
+
+        .interface-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .interface-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--text-white);
+        }
+
+        .interface-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .interface-dot.up {
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--glow-green);
+        }
+
+        .interface-dot.down {
+            background: var(--accent-red);
+        }
+
+        .interface-details div {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .interface-details div:last-child {
+            border-bottom: none;
+        }
+
+        .interface-details div span:last-child {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-light);
+        }
+
+        /* Page Title */
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+
+        /* Info Box */
+        .info-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 16px;
+        }
+
+        .info-box i {
+            color: var(--primary-light);
+        }
+
+        .info-box.warning {
+            background: rgba(245, 158, 11, 0.08);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .info-box.warning i {
+            color: var(--accent-yellow);
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 24px;
+            border-radius: 14px;
+            min-width: 320px;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95));
+        }
+
+        .toast.info {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(79, 70, 229, 0.95));
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-dark);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-dark);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .nav-group-title,
+            .nav-item span {
+                display: none;
+            }
+            
+            .nav-item {
+                justify-content: center;
+                padding: 14px;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-stats {
+                display: none;
+            }
+        }
+
+        /* Packet Table */
+        .packet-table {
+            max-height: 450px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <div class="logo-text">
+                <h1>Safe-Layer</h1>
+                <span>Advanced Firewall</span>
+            </div>
+        </div>
+
+        <div class="header-stats">
+            <div class="header-stat">
+                <div class="header-stat-value" id="header-packets">0</div>
+                <div class="header-stat-label">Packets</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value" id="header-blocked">0</div>
+                <div class="header-stat-label">Blocked IPs</div>
+            </div>
+            <div class="header-stat">
+                <div class="header-stat-value" id="header-websites">0</div>
+                <div class="header-stat-label">Blocked Sites</div>
+            </div>
+        </div>
+
+        <div class="firewall-toggle-container">
+            <span class="toggle-label">Firewall</span>
+            <label class="firewall-switch">
+                <input type="checkbox" id="firewall-toggle" checked onchange="toggleFirewall()">
+                <span class="slider"></span>
+            </label>
+            <span class="toggle-status" id="firewall-status-text">ON</span>
+        </div>
+
+        <div class="header-status" id="header-status-badge">
+            <div class="status-indicator"></div>
+            <span id="protection-status-text">Protection Active</span>
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <nav class="sidebar">
+            <div class="nav-group">
+                <div class="nav-group-title">Overview</div>
+                <div class="nav-item active" data-panel="dashboard">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" data-panel="capture">
+                    <i class="fas fa-wave-square"></i>
+                    <span>Traffic Monitor</span>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">Protection</div>
+                <div class="nav-item" data-panel="firewall">
+                    <i class="fas fa-ban"></i>
+                    <span>Block IP</span>
+                </div>
+                <div class="nav-item" data-panel="websites">
+                    <i class="fas fa-globe"></i>
+                    <span>Block Website</span>
+                </div>
+                <div class="nav-item" data-panel="protocols">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Block Protocol</span>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">Tools</div>
+                <div class="nav-item" data-panel="ping">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span>Ping</span>
+                </div>
+                <div class="nav-item" data-panel="nslookup">
+                    <i class="fas fa-search-location"></i>
+                    <span>NSLookup</span>
+                </div>
+                <div class="nav-item" data-panel="traceroute">
+                    <i class="fas fa-route"></i>
+                    <span>Traceroute</span>
+                </div>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-title">Network</div>
+                <div class="nav-item" data-panel="interfaces">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Interfaces</span>
+                </div>
+                <div class="nav-item" data-panel="connections">
+                    <i class="fas fa-plug"></i>
+                    <span>Connections</span>
+                </div>
+            </div>
+        </nav>
+
+        <main class="content">
+            <!-- Dashboard -->
+            <div class="panel active" id="dashboard">
+                <div class="page-header">
+                    <h2>Dashboard</h2>
+                    <p>Real-time network monitoring and protection status</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-icon cyan">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="stat-card-value" id="stat-recv">0 B</div>
+                        <div class="stat-card-label">Data Received</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon green">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-card-value" id="stat-sent">0 B</div>
+                        <div class="stat-card-label">Data Sent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon purple">
+                            <i class="fas fa-boxes-stacked"></i>
+                        </div>
+                        <div class="stat-card-value" id="stat-packets">0</div>
+                        <div class="stat-card-label">Total Packets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon red">
+                            <i class="fas fa-shield-halved"></i>
+                        </div>
+                        <div class="stat-card-value" id="stat-blocked">0</div>
+                        <div class="stat-card-label">Threats Blocked</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-title-icon cyan">
+                                    <i class="fas fa-clock-rotate-left"></i>
+                                </div>
+                                <div>
+                                    <h3>Recent Activity</h3>
+                                    <p>Latest network traffic</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Protocol</th>
+                                        <th>Source</th>
+                                        <th>Destination</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activity-body">
+                                    <tr><td colspan="4" class="empty-state"><i class="fas fa-inbox"></i><p>Start capture to see activity</p></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-title-icon red">
+                                    <i class="fas fa-ban"></i>
+                                </div>
+                                <div>
+                                    <h3>Blocked Threats</h3>
+                                    <p>IPs and websites blocked</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="dashboard-blocked" style="max-height: 300px; overflow-y: auto;">
+                            <div class="empty-state">
+                                <i class="fas fa-shield-check"></i>
+                                <p>No blocked items</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traffic Monitor -->
+            <div class="panel" id="capture">
+                <div class="page-header">
+                    <h2>Traffic Monitor</h2>
+                    <p>Real-time packet capture and analysis</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-title-icon cyan">
+                                <i class="fas fa-wave-square"></i>
+                            </div>
+                            <div>
+                                <h3>Packet Capture</h3>
+                                <p>Monitor network traffic in real-time</p>
+                            </div>
+                        </div>
+                        <div class="capture-controls">
+                            <div class="capture-status-badge" id="capture-badge">
+                                <div class="capture-dot"></div>
+                                <span id="capture-status-text">Stopped</span>
+                            </div>
+                            <button class="btn btn-success" id="btn-start" onclick="startCapture()">
+                                <i class="fas fa-play"></i> Start
+                            </button>
+                            <button class="btn btn-danger" id="btn-stop" onclick="stopCapture()" disabled>
+                                <i class="fas fa-stop"></i> Stop
+                            </button>
+                            <button class="btn btn-ghost" onclick="clearPackets()">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; color: var(--text-muted); font-size: 13px;">
+                        <span>Total Packets: <strong id="packet-count" style="color: var(--accent-cyan);">0</strong></span>
+                        <span>Started: <strong id="capture-time" style="color: var(--text-light);">-</strong></span>
+                    </div>
+
+                    <div class="table-container packet-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Protocol</th>
+                                    <th>Source</th>
+                                    <th>Destination</th>
+                                    <th>State</th>
+                                </tr>
+                            </thead>
+                            <tbody id="packets-body">
+                                <tr><td colspan="5" class="empty-state"><i class="fas fa-wave-square"></i><p>No packets captured</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block IP -->
+            <div class="panel" id="firewall">
+                <div class="page-header">
+                    <h2>IP Firewall</h2>
+                    <p>Block and unblock IP addresses using Windows Firewall</p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-title-icon red">
+                                    <i class="fas fa-ban"></i>
+                                </div>
+                                <div>
+                                    <h3>Block IP Address</h3>
+                                    <p>Add IP to firewall blocklist</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-network-wired"></i>
+                                <input type="text" id="block-ip" placeholder="Enter IP address (e.g., 8.8.8.8)">
+                            </div>
+                            <button class="btn btn-danger" onclick="blockIP()">
+                                <i class="fas fa-ban"></i> Block
+                            </button>
+                        </div>
+                        <div class="info-box warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Blocked IPs will show "General Failure" when pinged. Run as Administrator.</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-title-icon green">
+                                    <i class="fas fa-unlock"></i>
+                                </div>
+                                <div>
+                                    <h3>Unblock IP Address</h3>
+                                    <p>Remove IP from blocklist</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-network-wired"></i>
+                                <input type="text" id="unblock-ip" placeholder="Enter IP address to unblock">
+                            </div>
+                            <button class="btn btn-success" onclick="unblockIP()">
+                                <i class="fas fa-unlock"></i> Unblock
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-title-icon primary">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <div>
+                                <h3>Blocked IP Addresses</h3>
+                                <p>Currently blocked IPs</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost" onclick="refreshBlockedIPs()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="blocked-ips-list">
+                        <div class="empty-state">
+                            <i class="fas fa-shield-check"></i>
+                            <p>No blocked IPs</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block Websites -->
+            <div class="panel" id="websites">
+                <div class="page-header">
+                    <h2>Website Blocker</h2>
+                    <p>Block websites from being accessed in any browser</p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-title-icon red">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div>
+                                    <h3>Block Website</h3>
+                                    <p>Add website to blocklist</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-link"></i>
+                                <input type="text" id="block-website" placeholder="Enter domain (e.g., facebook.com)">
+                            </div>
+                            <button class="btn btn-danger" onclick="blockWebsite()">
+                                <i class="fas fa-ban"></i> Block
+                            </button>
+                        </div>
+                        <div class="info-box">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Blocked websites will not open in any browser. Changes take effect immediately.</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-title-icon green">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <div>
+                                    <h3>Unblock Website</h3>
+                                    <p>Remove website from blocklist</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-link"></i>
+                                <input type="text" id="unblock-website" placeholder="Enter domain to unblock">
+                            </div>
+                            <button class="btn btn-success" onclick="unblockWebsite()">
+                                <i class="fas fa-unlock"></i> Unblock
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-title-icon primary">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <div>
+                                <h3>Blocked Websites</h3>
+                                <p>Currently blocked domains</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost" onclick="refreshBlockedWebsites()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="blocked-websites-list">
+                        <div class="empty-state">
+                            <i class="fas fa-globe"></i>
+                            <p>No blocked websites</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ping -->
+            <div class="panel" id="ping">
+                <div class="page-header">
+                    <h2>Ping Tool</h2>
+                    <p>Test network connectivity to any host</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-title-icon cyan">
+                                <i class="fas fa-satellite-dish"></i>
+                            </div>
+                            <div>
+                                <h3>Ping Host</h3>
+                                <p>Send ICMP echo requests</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-server"></i>
+                            <input type="text" id="ping-target" placeholder="Enter hostname or IP (e.g., google.com)">
+                        </div>
+                        <button class="btn btn-primary" onclick="executePing()" id="btn-ping">
+                            <i class="fas fa-play"></i> Ping
+                        </button>
+                    </div>
+                    <div class="output-box" id="ping-output">Enter a target and click Ping to start...</div>
+                </div>
+            </div>
+
+            <!-- NSLookup -->
+            <div class="panel" id="nslookup">
+                <div class="page-header">
+                    <h2>NSLookup Tool</h2>
+                    <p>Query DNS records for any domain</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-title-icon primary">
+                                <i class="fas fa-search-location"></i>
+                            </div>
+                            <div>
+                                <h3>DNS Lookup</h3>
+                                <p>Resolve domain names</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-globe"></i>
+                            <input type="text" id="nslookup-target" placeholder="Enter domain (e.g., google.com)">
+                        </div>
+                        <button class="btn btn-primary" onclick="executeNSLookup()" id="btn-nslookup">
+                            <i class="fas fa-search"></i> Lookup
+                        </button>
+                    </div>
+                    <div class="output-box" id="nslookup-output">Enter a domain and click Lookup to start...</div>
+                </div>
+            </div>
+
+            <!-- Traceroute -->
+            <div class="panel" id="traceroute">
+                <div class="page-header">
+                    <h2>Traceroute Tool</h2>
+                    <p>Trace the path packets take to reach a destination</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-title-icon green">
+                                <i class="fas fa-route"></i>
+                            </div>
+                            <div>
+                                <h3>Trace Route</h3>
+                                <p>Map network path to destination</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-server"></i>
+                            <input type="text" id="traceroute-target" placeholder="Enter hostname or IP">
+                        </div>
+                        <button class="btn btn-primary" onclick="executeTraceroute()" id="btn-traceroute">
+                            <i class="fas fa-route"></i> Trace
+                        </button>
+                    </div>
+                    <div class="info-box warning">
+                        <i class="fas fa-clock"></i>
+                        <span>Traceroute may take up to 60 seconds to complete</span>
+                    </div>
+                    <div class="output-box" id="traceroute-output" style="margin-top: 16px;">Enter a target and click Trace to start...</div>
+                </div>
+            </div>
+
+            <!-- Interfaces -->
+            <div class="panel" id="interfaces">
+                <div class="page-header">
+                    <h2>Network Interfaces</h2>
+                    <p>View all network adapters and their statistics</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-title-icon cyan">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div>
+                                <h3>Network Adapters</h3>
+                                <p>Interface details and statistics</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost" onclick="refreshInterfaces()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="grid-2" id="interfaces-list">
+                        <div class="empty-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading interfaces...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block Protocols -->
+            <div class="panel" id="protocols">
+                <div class="page-header">
+                    <h2>Protocol Blocker</h2>
+                    <p>Block network protocols (TCP, UDP, ICMP, ICMPV6) using Windows Firewall</p>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-title-icon red">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div>
+                                    <h3>Block Protocol</h3>
+                                    <p>Block network protocol traffic</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-network-wired"></i>
+                                <select id="block-protocol" class="protocol-select">
+                                    <option value="">Select Protocol</option>
+                                    <option value="TCP">TCP</option>
+                                    <option value="UDP">UDP</option>
+                                    <option value="ICMP">ICMP (Ping)</option>
+                                    <option value="ICMPV6">ICMPv6</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-danger" onclick="blockProtocol()">
+                                <i class="fas fa-ban"></i> Block
+                            </button>
+                        </div>
+                        <div class="info-box warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Blocking protocols will prevent all traffic using that protocol. Use with caution.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-title-icon green">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                                <div>
+                                    <h3>Unblock Protocol</h3>
+                                    <p>Allow protocol traffic again</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-wrapper">
+                                <i class="fas fa-network-wired"></i>
+                                <select id="unblock-protocol" class="protocol-select">
+                                    <option value="">Select Protocol</option>
+                                    <option value="TCP">TCP</option>
+                                    <option value="UDP">UDP</option>
+                                    <option value="ICMP">ICMP (Ping)</option>
+                                    <option value="ICMPV6">ICMPv6</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success" onclick="unblockProtocol()">
+                                <i class="fas fa-unlock"></i> Unblock
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-title-icon primary">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <div>
+                                <h3>Blocked Protocols</h3>
+                                <p>Currently blocked network protocols</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost" onclick="refreshBlockedProtocols()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="blocked-protocols-list">
+                        <div class="empty-state">
+                            <i class="fas fa-network-wired"></i>
+                            <p>No blocked protocols</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Connections -->
+            <div class="panel" id="connections">
+                <div class="page-header">
+                    <h2>Active Connections</h2>
+                    <p>View all active network connections</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <div class="card-title-icon green">
+                                <i class="fas fa-plug"></i>
+                            </div>
+                            <div>
+                                <h3>Connection List</h3>
+                                <p>Active TCP/UDP connections</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost" onclick="refreshConnections()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Local Address</th>
+                                    <th>Remote Address</th>
+                                    <th>Status</th>
+                                    <th>PID</th>
+                                </tr>
+                            </thead>
+                            <tbody id="connections-body">
+                                <tr><td colspan="5" class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                item.classList.add('active');
+                document.getElementById(item.dataset.panel).classList.add('active');
+            });
+        });
+
+        // Toast
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Format bytes
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        // Capture
+        let captureInterval = null;
+
+        async function startCapture() {
+            try {
+                const res = await fetch('/api/capture/start', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('btn-start').disabled = true;
+                    document.getElementById('btn-stop').disabled = false;
+                    document.getElementById('capture-badge').classList.add('active');
+                    document.getElementById('capture-status-text').textContent = 'Capturing';
+                    captureInterval = setInterval(updatePackets, 1000);
+                    showToast('Packet capture started', 'success');
+                }
+            } catch (e) {
+                showToast('Failed to start capture', 'error');
+            }
+        }
+
+        async function stopCapture() {
+            try {
+                const res = await fetch('/api/capture/stop', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('btn-start').disabled = false;
+                    document.getElementById('btn-stop').disabled = true;
+                    document.getElementById('capture-badge').classList.remove('active');
+                    document.getElementById('capture-status-text').textContent = 'Stopped';
+                    clearInterval(captureInterval);
+                    showToast('Capture stopped', 'info');
+                }
+            } catch (e) {
+                showToast('Failed to stop capture', 'error');
+            }
+        }
+
+        async function updatePackets() {
+            try {
+                const res = await fetch('/api/capture/packets');
+                const data = await res.json();
+                
+                document.getElementById('packet-count').textContent = data.total;
+                document.getElementById('header-packets').textContent = data.total;
+                
+                if (data.packets.length > 0) {
+                    const rows = data.packets.slice(-50).reverse().map(p => `
+                        <tr>
+                            <td>${p.timestamp}</td>
+                            <td><span class="badge badge-cyan">${p.protocol}</span></td>
+                            <td>${p.source}</td>
+                            <td>${p.destination}</td>
+                            <td><span class="badge ${p.state === 'ESTABLISHED' ? 'badge-success' : 'badge-primary'}">${p.state}</span></td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('packets-body').innerHTML = rows;
+                    
+                    const activityRows = data.packets.slice(-10).reverse().map(p => `
+                        <tr>
+                            <td>${p.timestamp}</td>
+                            <td><span class="badge badge-cyan">${p.protocol}</span></td>
+                            <td>${p.source}</td>
+                            <td>${p.destination}</td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('activity-body').innerHTML = activityRows;
+                }
+                
+                const status = await fetch('/api/capture/status').then(r => r.json());
+                if (status.start_time) {
+                    document.getElementById('capture-time').textContent = status.start_time;
+                }
+            } catch (e) {}
+        }
+
+        function clearPackets() {
+            document.getElementById('packets-body').innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fas fa-wave-square"></i><p>No packets captured</p></td></tr>';
+            document.getElementById('packet-count').textContent = '0';
+        }
+
+        // Ping
+        async function executePing() {
+            const target = document.getElementById('ping-target').value.trim();
+            if (!target) return showToast('Enter a target', 'error');
+            
+            const output = document.getElementById('ping-output');
+            const btn = document.getElementById('btn-ping');
+            output.textContent = `Pinging ${target}...\n`;
+            output.classList.remove('error');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/ping', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target })
+                });
+                const data = await res.json();
+                output.textContent = data.output;
+                if (!data.success) output.classList.add('error');
+            } catch (e) {
+                output.textContent = 'Error: ' + e.message;
+                output.classList.add('error');
+            }
+            btn.disabled = false;
+        }
+
+        // NSLookup
+        async function executeNSLookup() {
+            const target = document.getElementById('nslookup-target').value.trim();
+            if (!target) return showToast('Enter a domain', 'error');
+            
+            const output = document.getElementById('nslookup-output');
+            const btn = document.getElementById('btn-nslookup');
+            output.textContent = `Looking up ${target}...\n`;
+            output.classList.remove('error');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/nslookup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target })
+                });
+                const data = await res.json();
+                output.textContent = data.output;
+                if (!data.success) output.classList.add('error');
+            } catch (e) {
+                output.textContent = 'Error: ' + e.message;
+                output.classList.add('error');
+            }
+            btn.disabled = false;
+        }
+
+        // Traceroute
+        async function executeTraceroute() {
+            const target = document.getElementById('traceroute-target').value.trim();
+            if (!target) return showToast('Enter a target', 'error');
+            
+            const output = document.getElementById('traceroute-output');
+            const btn = document.getElementById('btn-traceroute');
+            output.textContent = `Tracing route to ${target}...\nThis may take up to 60 seconds.\n`;
+            output.classList.remove('error');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/traceroute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target })
+                });
+                const data = await res.json();
+                output.textContent = data.output;
+                if (!data.success) output.classList.add('error');
+            } catch (e) {
+                output.textContent = 'Error: ' + e.message;
+                output.classList.add('error');
+            }
+            btn.disabled = false;
+        }
+
+        // Block/Unblock IP
+        async function blockIP() {
+            const ip = document.getElementById('block-ip').value.trim();
+            if (!ip) return showToast('Enter an IP address', 'error');
+
+            try {
+                const res = await fetch('/api/block', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                if (data.success) {
+                    document.getElementById('block-ip').value = '';
+                    refreshBlockedIPs();
+                }
+            } catch (e) {
+                showToast('Failed to block IP', 'error');
+            }
+        }
+
+        async function unblockIP() {
+            const ip = document.getElementById('unblock-ip').value.trim();
+            if (!ip) return showToast('Enter an IP address', 'error');
+
+            try {
+                const res = await fetch('/api/unblock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                if (data.success) {
+                    document.getElementById('unblock-ip').value = '';
+                    refreshBlockedIPs();
+                }
+            } catch (e) {
+                showToast('Failed to unblock IP', 'error');
+            }
+        }
+
+        async function unblockIPDirect(ip) {
+            try {
+                const res = await fetch('/api/unblock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                refreshBlockedIPs();
+            } catch (e) {
+                showToast('Failed to unblock IP', 'error');
+            }
+        }
+
+        async function refreshBlockedIPs() {
+            try {
+                const res = await fetch('/api/blocked');
+                const ips = await res.json();
+                
+                document.getElementById('header-blocked').textContent = ips.length;
+                updateDashboardBlocked();
+                
+                const container = document.getElementById('blocked-ips-list');
+                if (ips.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-shield-check"></i><p>No blocked IPs</p></div>';
+                } else {
+                    container.innerHTML = ips.map(ip => `
+                        <div class="blocked-item">
+                            <div class="blocked-item-info">
+                                <div class="blocked-item-icon"><i class="fas fa-network-wired"></i></div>
+                                <div>
+                                    <div class="blocked-item-text">${ip}</div>
+                                    <div class="blocked-item-type">IP Address</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success btn-sm" onclick="unblockIPDirect('${ip}')">
+                                <i class="fas fa-unlock"></i> Unblock
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {}
+        }
+
+        // Block/Unblock Website
+        async function blockWebsite() {
+            const website = document.getElementById('block-website').value.trim();
+            if (!website) return showToast('Enter a website', 'error');
+
+            try {
+                const res = await fetch('/api/website/block', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ website })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                if (data.success) {
+                    document.getElementById('block-website').value = '';
+                    refreshBlockedWebsites();
+                }
+            } catch (e) {
+                showToast('Failed to block website', 'error');
+            }
+        }
+
+        async function unblockWebsite() {
+            const website = document.getElementById('unblock-website').value.trim();
+            if (!website) return showToast('Enter a website', 'error');
+
+            try {
+                const res = await fetch('/api/website/unblock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ website })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                if (data.success) {
+                    document.getElementById('unblock-website').value = '';
+                    refreshBlockedWebsites();
+                }
+            } catch (e) {
+                showToast('Failed to unblock website', 'error');
+            }
+        }
+
+        async function unblockWebsiteDirect(website) {
+            try {
+                const res = await fetch('/api/website/unblock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ website })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                refreshBlockedWebsites();
+            } catch (e) {
+                showToast('Failed to unblock website', 'error');
+            }
+        }
+
+        async function refreshBlockedWebsites() {
+            try {
+                const res = await fetch('/api/websites/blocked');
+                const websites = await res.json();
+                
+                document.getElementById('header-websites').textContent = websites.length;
+                updateDashboardBlocked();
+                
+                const container = document.getElementById('blocked-websites-list');
+                if (websites.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>No blocked websites</p></div>';
+                } else {
+                    container.innerHTML = websites.map(site => `
+                        <div class="blocked-item">
+                            <div class="blocked-item-info">
+                                <div class="blocked-item-icon"><i class="fas fa-globe"></i></div>
+                                <div>
+                                    <div class="blocked-item-text">${site}</div>
+                                    <div class="blocked-item-type">Website</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success btn-sm" onclick="unblockWebsiteDirect('${site}')">
+                                <i class="fas fa-unlock"></i> Unblock
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {}
+        }
+        
+        // Block/Unblock Protocol
+        async function blockProtocol() {
+            const protocol = document.getElementById('block-protocol').value;
+            if (!protocol) return showToast('Select a protocol', 'error');
+            
+            try {
+                const res = await fetch('/api/protocol/block', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ protocol })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                if (data.success) {
+                    document.getElementById('block-protocol').value = '';
+                    refreshBlockedProtocols();
+                }
+            } catch (e) {
+                showToast('Failed to block protocol', 'error');
+            }
+        }
+        
+        async function unblockProtocol() {
+            const protocol = document.getElementById('unblock-protocol').value;
+            if (!protocol) return showToast('Select a protocol', 'error');
+            
+            try {
+                const res = await fetch('/api/protocol/unblock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ protocol })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                if (data.success) {
+                    document.getElementById('unblock-protocol').value = '';
+                    refreshBlockedProtocols();
+                }
+            } catch (e) {
+                showToast('Failed to unblock protocol', 'error');
+            }
+        }
+        
+        async function unblockProtocolDirect(protocol) {
+            try {
+                const res = await fetch('/api/protocol/unblock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ protocol })
+                });
+                const data = await res.json();
+                showToast(data.message, data.success ? 'success' : 'error');
+                refreshBlockedProtocols();
+            } catch (e) {
+                showToast('Failed to unblock protocol', 'error');
+            }
+        }
+        
+        async function refreshBlockedProtocols() {
+            try {
+                const res = await fetch('/api/protocols/blocked');
+                const protocols = await res.json();
+                
+                const container = document.getElementById('blocked-protocols-list');
+                if (protocols.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-network-wired"></i><p>No blocked protocols</p></div>';
+                } else {
+                    container.innerHTML = protocols.map(protocol => `
+                        <div class="blocked-item">
+                            <div class="blocked-item-info">
+                                <div class="blocked-item-icon"><i class="fas fa-network-wired"></i></div>
+                                <div>
+                                    <div class="blocked-item-text">${protocol}</div>
+                                    <div class="blocked-item-type">Protocol</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success btn-sm" onclick="unblockProtocolDirect('${protocol}')">
+                                <i class="fas fa-unlock"></i> Unblock
+                            </button>
+                        </div>
+                    `).join('');
+                }
+                
+                // Update dashboard blocked items
+                updateDashboardBlocked();
+            } catch (e) {}
+        }
+
+        async function updateDashboardBlocked() {
+            try {
+                const [ipsRes, sitesRes, protocolsRes] = await Promise.all([
+                    fetch('/api/blocked'),
+                    fetch('/api/websites/blocked'),
+                    fetch('/api/protocols/blocked')
+                ]);
+                const ips = await ipsRes.json();
+                const sites = await sitesRes.json();
+                const protocols = await protocolsRes.json();
+                
+                const total = ips.length + sites.length + protocols.length;
+                document.getElementById('stat-blocked').textContent = total;
+                
+                const container = document.getElementById('dashboard-blocked');
+                const items = [
+                    ...ips.map(ip => ({ type: 'IP', value: ip, icon: 'fa-network-wired' })),
+                    ...sites.map(site => ({ type: 'Website', value: site, icon: 'fa-globe' })),
+                    ...protocols.map(protocol => ({ type: 'Protocol', value: protocol, icon: 'fa-network-wired' }))
+                ];
+                
+                if (items.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-shield-check"></i><p>No blocked items</p></div>';
+                } else {
+                    container.innerHTML = items.slice(0, 5).map(item => `
+                        <div class="blocked-item" style="margin-bottom: 8px;">
+                            <div class="blocked-item-info">
+                                <div class="blocked-item-icon"><i class="fas ${item.icon}"></i></div>
+                                <div>
+                                    <div class="blocked-item-text">${item.value}</div>
+                                    <div class="blocked-item-type">${item.type}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {}
+        }
+
+        // Interfaces
+        async function refreshInterfaces() {
+            try {
+                const res = await fetch('/api/interfaces');
+                const interfaces = await res.json();
+                
+                const container = document.getElementById('interfaces-list');
+                container.innerHTML = interfaces.map(iface => `
+                    <div class="interface-card">
+                        <div class="interface-header">
+                            <span class="interface-name">
+                                <div class="interface-dot ${iface.is_up ? 'up' : 'down'}"></div>
+                                ${iface.name.substring(0, 25)}${iface.name.length > 25 ? '...' : ''}
+                            </span>
+                            <span class="badge ${iface.is_up ? 'badge-success' : 'badge-danger'}">${iface.is_up ? 'UP' : 'DOWN'}</span>
+                        </div>
+                        <div class="interface-details">
+                            <div><span>IPv4</span><span>${iface.ipv4 || '-'}</span></div>
+                            <div><span>Netmask</span><span>${iface.netmask || '-'}</span></div>
+                            <div><span>MAC</span><span>${iface.mac || '-'}</span></div>
+                            <div><span>Speed</span><span>${iface.speed > 0 ? iface.speed + ' Mbps' : '-'}</span></div>
+                            <div><span>Sent</span><span>${formatBytes(iface.bytes_sent)}</span></div>
+                            <div><span>Received</span><span>${formatBytes(iface.bytes_recv)}</span></div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {}
+        }
+
+        // Connections
+        async function refreshConnections() {
+            try {
+                const res = await fetch('/api/connections');
+                const connections = await res.json();
+                
+                const tbody = document.getElementById('connections-body');
+                if (connections.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fas fa-plug"></i><p>No active connections</p></td></tr>';
+                } else {
+                    tbody.innerHTML = connections.map(c => `
+                        <tr>
+                            <td><span class="badge badge-cyan">${c.type}</span></td>
+                            <td>${c.local_addr}</td>
+                            <td>${c.remote_addr}</td>
+                            <td><span class="badge ${c.status === 'ESTABLISHED' ? 'badge-success' : c.status === 'LISTEN' ? 'badge-warning' : 'badge-primary'}">${c.status}</span></td>
+                            <td>${c.pid || '-'}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) {}
+        }
+
+        // Stats
+        async function updateStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const stats = await res.json();
+                
+                document.getElementById('stat-recv').textContent = formatBytes(stats.bytes_recv);
+                document.getElementById('stat-sent').textContent = formatBytes(stats.bytes_sent);
+                document.getElementById('stat-packets').textContent = (stats.packets_sent + stats.packets_recv).toLocaleString();
+            } catch (e) {}
+        }
+
+        // Firewall Toggle
+        async function getFirewallStatus() {
+            try {
+                const res = await fetch('/api/firewall/status');
+                const data = await res.json();
+                updateFirewallUI(data.enabled);
+                return data.enabled;
+            } catch (e) {
+                console.error('Failed to get firewall status:', e);
+                return true;
+            }
+        }
+
+        function updateFirewallUI(enabled) {
+            const toggle = document.getElementById('firewall-toggle');
+            const statusText = document.getElementById('firewall-status-text');
+            const headerBadge = document.getElementById('header-status-badge');
+            const protectionText = document.getElementById('protection-status-text');
+            
+            toggle.checked = enabled;
+            statusText.textContent = enabled ? 'ON' : 'OFF';
+            statusText.className = 'toggle-status ' + (enabled ? 'on' : 'off');
+            
+            if (enabled) {
+                headerBadge.classList.remove('disabled');
+                protectionText.textContent = 'Protection Active';
+            } else {
+                headerBadge.classList.add('disabled');
+                protectionText.textContent = 'Protection Disabled';
+            }
+        }
+
+        async function toggleFirewall() {
+            const toggle = document.getElementById('firewall-toggle');
+            const enable = toggle.checked;
+            
+            try {
+                const res = await fetch('/api/firewall/toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enable })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    updateFirewallUI(enable);
+                    showToast(data.message, 'success');
+                } else {
+                    // Revert toggle if failed
+                    toggle.checked = !enable;
+                    showToast(data.message, 'error');
+                }
+            } catch (e) {
+                toggle.checked = !enable;
+                showToast('Failed to toggle firewall', 'error');
+            }
+        }
+
+        // Enter key handlers
+        ['ping-target', 'nslookup-target', 'traceroute-target', 'block-ip', 'unblock-ip', 'block-website', 'unblock-website'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('keypress', e => {
+                    if (e.key === 'Enter') {
+                        if (id === 'ping-target') executePing();
+                        else if (id === 'nslookup-target') executeNSLookup();
+                        else if (id === 'traceroute-target') executeTraceroute();
+                        else if (id === 'block-ip') blockIP();
+                        else if (id === 'unblock-ip') unblockIP();
+                        else if (id === 'block-website') blockWebsite();
+                        else if (id === 'unblock-website') unblockWebsite();
+                    }
+                });
+            }
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshInterfaces();
+            refreshConnections();
+            refreshBlockedIPs();
+            refreshBlockedWebsites();
+            refreshBlockedProtocols();
+            updateStats();
+            updateDashboardBlocked();
+            getFirewallStatus();
+            
+            setInterval(updateStats, 5000);
+            setInterval(refreshConnections, 10000);
+        });
+    </script>
+</body>
+</html>
