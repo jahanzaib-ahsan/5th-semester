@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Step 1 &mdash; Image Preprocessing</title>
+    <link rel="stylesheet" href="step-1-image-preprocessing.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="step-header">
+      <div class="container">
+        <h1>Step 1 &mdash; Image Input and Preprocessing</h1>
+        <p>
+          Prepare the math question image for OCR with simple, explainable
+          transformations.
+        </p>
+        <nav class="breadcrumb">
+          <a href="../index.html">Home</a>
+          <span>&rsaquo;</span>
+          <span>Step 1</span>
+        </nav>
+        <nav class="step-timeline" aria-label="Pipeline timeline">
+          <ol>
+            <li class="active">1. Image</li>
+            <li>2. OCR</li>
+            <li>3. Confirm</li>
+            <li>4. Validate</li>
+            <li>5. Solve</li>
+          </ol>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container step-main">
+      <section class="panel panel-upload" aria-labelledby="uploadTitle">
+        <h2 id="uploadTitle">1. Upload math question image</h2>
+        <p>
+          Select any image file that visually represents a mathematics question.
+        </p>
+        <input type="file" id="imageInput" accept="image/*" />
+        <p class="hint">
+          (For this academic demo we focus on the pipeline explanation, not on
+          actual image processing quality.)
+        </p>
+        <div
+          class="image-preview"
+          id="imagePreviewContainer"
+          aria-label="Original image preview"
+        >
+          <p id="noImageMessage">No image selected yet.</p>
+          <img id="originalImage" alt="Uploaded math question preview" />
+        </div>
+      </section>
+
+      <section
+        class="panel panel-preprocessing"
+        aria-labelledby="preprocessTitle"
+      >
+        <h2 id="preprocessTitle">2. Simulated preprocessing pipeline</h2>
+        <p>
+          Before OCR, real systems clean the image to make characters easier to
+          recognise. Here we simulate three common steps and explain why each
+          one is important.
+        </p>
+
+        <div class="preprocess-steps" id="preprocessSteps">
+          <article class="preprocess-step" data-step="grayscale">
+            <header>
+              <h3>Conversion to grayscale</h3>
+              <span class="status-badge" aria-label="Status">Waiting</span>
+            </header>
+            <p class="explanation">
+              The colour image is converted into shades of gray. This removes
+              colour information that is not relevant for recognising text,
+              reduces data size, and simplifies later processing.
+            </p>
+          </article>
+
+          <article class="preprocess-step" data-step="denoise">
+            <header>
+              <h3>Noise reduction</h3>
+              <span class="status-badge" aria-label="Status">Waiting</span>
+            </header>
+            <p class="explanation">
+              Small random dots or scan artefacts are reduced. This prevents the
+              OCR engine from confusing noise with punctuation or mathematical
+              symbols.
+            </p>
+          </article>
+
+          <article class="preprocess-step" data-step="contrast">
+            <header>
+              <h3>Contrast enhancement</h3>
+              <span class="status-badge" aria-label="Status">Waiting</span>
+            </header>
+            <p class="explanation">
+              The difference between the background and the text is increased so
+              that numbers, operators, and symbols stand out more clearly for
+              OCR.
+            </p>
+          </article>
+        </div>
+
+        <button class="primary-button" id="simulateButton" type="button">
+          Simulate preprocessing
+        </button>
+        <p class="note">
+          Note: In this project, we only simulate these steps conceptually. A
+          production system would operate on pixel values and produce a new,
+          cleaned image.
+        </p>
+      </section>
+
+      <section class="panel panel-next">
+        <h2>3. Next step &mdash; OCR extraction</h2>
+        <p>
+          Once preprocessing is complete, the cleaned image is ready to be sent
+          to the OCR engine to convert pixels into text.
+        </p>
+        <a
+          href="../step-2-ocr-extraction/step-2-ocr-extraction.html"
+          class="secondary-button"
+          >Go to Step 2 &mdash; OCR Extraction</a
+        >
+      </section>
+    </main>
+
+    <footer class="step-footer">
+      <div class="container">
+        <p>Explainable AI Pipeline &mdash; Image Preprocessing Module</p>
+      </div>
+    </footer>
+
+    <script src="../cursor.js"></script>
+    <script src="step-1-image-preprocessing.js"></script>
+  </body>
+</html>

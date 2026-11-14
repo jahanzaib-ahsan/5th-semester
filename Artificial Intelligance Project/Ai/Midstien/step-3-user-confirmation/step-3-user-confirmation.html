@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Step 3 – User Confirmation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="step-3-user-confirmation.css" />
+  </head>
+  <body>
+    <header class="step-header">
+      <div class="container">
+        <h1>Step 3 — User Confirmation and Editing</h1>
+        <p>
+          Human-in-the-loop verification of the extracted mathematical question.
+        </p>
+        <nav class="breadcrumb">
+          <a href="../index.html">Home</a>
+          <span>›</span>
+          <span>Step 3</span>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container step-main">
+      <section class="panel" aria-labelledby="whyConfirmTitle">
+        <h2 id="whyConfirmTitle">1. Why user validation matters</h2>
+        <p>
+          Even advanced OCR and AI models can misread symbols, especially in
+          mathematical notation. In safety-critical or academic systems, a user
+          is often asked to confirm the recognised text before it is used.
+        </p>
+        <ul class="explanation-list">
+          <li>
+            Small OCR mistakes can completely change the meaning of an equation.
+          </li>
+          <li>
+            Users may want to add missing context, such as units or constraints.
+          </li>
+          <li>
+            Confirmation creates a clear responsibility boundary between machine
+            and human.
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="editTitle">
+        <h2 id="editTitle">2. Review and edit the extracted question</h2>
+        <p>
+          Below is the question as produced by the OCR cleaning stage. You can
+          edit it freely before confirming.
+        </p>
+        <label for="questionText" class="field-label">Extracted question</label>
+        <textarea
+          id="questionText"
+          class="question-textarea"
+          rows="5"
+        ></textarea>
+        <div class="actions-row">
+          <button id="confirmButton" class="primary-button" type="button">
+            Confirm question
+          </button>
+          <span
+            id="confirmStatus"
+            class="status-message"
+            aria-live="polite"
+          ></span>
+        </div>
+      </section>
+
+      <section class="panel panel-next">
+        <nav class="step-timeline" aria-label="Pipeline timeline">
+          <ol>
+            <li>1. Image</li>
+            <li>2. OCR</li>
+            <li class="active">3. Confirm</li>
+            <li>4. Validate</li>
+            <li>5. Solve</li>
+          </ol>
+        </nav>
+        <h2>3. Progression to mathematical validation</h2>
+        <p>
+          The system will only allow progression once you explicitly confirm the
+          question. This mirrors responsible AI design where user approval is
+          required before automated reasoning.
+        </p>
+        <button
+          id="proceedButton"
+          class="secondary-button"
+          type="button"
+          disabled
+        >
+          Proceed to Step 4 — Mathematical Validation
+        </button>
+      </section>
+    </main>
+
+    <footer class="step-footer">
+      <div class="container">
+        <p>Explainable AI Pipeline — User Confirmation Module</p>
+      </div>
+    </footer>
+
+    <script src="../cursor.js"></script>
+    <script src="step-3-user-confirmation.js"></script>
+  </body>
+</html>

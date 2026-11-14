@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Step 4 — Mathematical Validation</title>
+    <link rel="stylesheet" href="step-4-question-validation.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="step-header">
+      <div class="container">
+        <h1>Step 4 — Mathematical Validation</h1>
+        <nav class="step-timeline" aria-label="Pipeline timeline">
+          <ol>
+            <li>1. Image</li>
+            <li>2. OCR</li>
+            <li>3. Confirm</li>
+            <li class="active">4. Validate</li>
+            <li>5. Solve</li>
+          </ol>
+        </nav>
+        <p>
+          Normalise symbols and check that the question is structurally valid
+          before AI reasoning.
+        </p>
+        <nav class="breadcrumb">
+          <a href="../index.html">Home</a>
+          <span>›</span>
+          <span>Step 4</span>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container step-main">
+      <section class="panel" aria-labelledby="validationIntroTitle">
+        <h2 id="validationIntroTitle">1. Purpose of validation</h2>
+        <p>
+          Before the question is sent to an AI model, we check that it is
+          mathematically well-formed. This reduces the chance that the model
+          solves the wrong problem or produces ambiguous results.
+        </p>
+      </section>
+
+      <section class="panel" aria-labelledby="inputTitle">
+        <h2 id="inputTitle">2. Input from confirmed question</h2>
+        <p>
+          The confirmed question becomes the input to this stage. You can still
+          make small corrections if needed.
+        </p>
+        <label for="inputQuestion" class="field-label"
+          >Confirmed question</label
+        >
+        <textarea
+          id="inputQuestion"
+          class="question-textarea"
+          rows="4"
+          placeholder="Recognised question will appear here."
+        ></textarea>
+        <button id="runValidation" class="primary-button" type="button">
+          Run validation
+        </button>
+      </section>
+
+      <section class="panel panel-results" aria-labelledby="resultsTitle">
+        <h2 id="resultsTitle">3. Normalisation and checks</h2>
+        <div class="results-grid">
+          <div>
+            <h3>Normalised expression</h3>
+            <pre
+              id="normalisedExpression"
+              class="text-box"
+              aria-label="Normalised question text"
+            ></pre>
+          </div>
+          <div>
+            <h3>Validation log</h3>
+            <ul id="validationLog" class="log-list"></ul>
+          </div>
+        </div>
+        <p id="readyMessage" class="ready-message" aria-live="polite"></p>
+      </section>
+
+      <section class="panel panel-next">
+        <h2>4. Progression to AI solution</h2>
+        <p>
+          Only once the expression passes basic checks do we mark it as ready
+          for AI processing.
+        </p>
+        <button id="goToStep5" class="secondary-button" type="button" disabled>
+          Proceed to Step 5 — AI Solution
+        </button>
+      </section>
+    </main>
+
+    <footer class="step-footer">
+      <div class="container">
+        <p>Explainable AI Pipeline — Mathematical Validation Module</p>
+      </div>
+    </footer>
+    <script src="../cursor.js"></script>
+    <script src="step-4-question-validation.js"></script>
+  </body>
+</html>

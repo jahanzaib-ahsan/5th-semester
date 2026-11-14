@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Step 5 — AI Step-by-Step Solution</title>
+    <link rel="stylesheet" href="step-5-ai-solution.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="step-header">
+      <div class="container">
+        <h1>Step 5 — AI Based Step-by-Step Solution</h1>
+        <p>Transparent, step-by-step mathematical reasoning.</p>
+        <nav class="breadcrumb">
+          <a href="../index.html">Home</a>
+          <span>›</span>
+          <span>Step 5</span>
+        </nav>
+        <nav class="step-timeline" aria-label="Pipeline timeline">
+          <ol>
+            <li>1. Image</li>
+            <li>2. OCR</li>
+            <li>3. Confirm</li>
+            <li>4. Validate</li>
+            <li class="active">5. Solve</li>
+          </ol>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container step-main">
+      <section class="panel" aria-labelledby="aiConceptTitle">
+        <h2 id="aiConceptTitle">1. How AI reasoning works conceptually</h2>
+        <p>
+          The solver is designed to return a clear sequence of intermediate
+          steps that connect the problem to the final answer, rather than only
+          giving a final number.
+        </p>
+        <ul class="explanation-list">
+          <li>They interpret the normalised mathematical expression.</li>
+          <li>
+            They apply algebraic rules learned from data (e.g. isolating a
+            variable).
+          </li>
+          <li>
+            They explain each transformation in natural language, improving
+            transparency.
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="questionTitle">
+        <h2 id="questionTitle">2. Validated input question</h2>
+        <p>This is the question sent to the AI solver.</p>
+        <pre id="validatedQuestion" class="text-box"></pre>
+        <button id="solveButton" class="primary-button" type="button">
+          Generate solution
+        </button>
+        <p id="apiStatus" class="api-status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="solutionTitle">
+        <h2 id="solutionTitle">3. Step-by-step solution</h2>
+        <ol id="solutionSteps" class="solution-list"></ol>
+        <div
+          id="finalAnswerContainer"
+          class="final-answer"
+          aria-live="polite"
+        ></div>
+      </section>
+    </main>
+
+    <footer class="step-footer">
+      <div class="container">
+        <p>Explainable AI Pipeline — AI Reasoning Module</p>
+      </div>
+    </footer>
+    <script src="../cursor.js"></script>
+    <script src="step-5-ai-solution.js"></script>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Step 2 – OCR Extraction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="step-2-ocr-extraction.css" />
+  </head>
+  <body>
+    <header class="step-header">
+      <div class="container">
+        <h1>Step 2 — OCR Text Extraction</h1>
+        <p>
+          Convert the preprocessed image into raw text, then clean it into a
+          readable maths question.
+        </p>
+        <nav class="breadcrumb">
+          <a href="../index.html">Home</a>
+          <span>›</span>
+          <span>Step 2</span>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container step-main">
+      <section class="panel" aria-labelledby="simulateOcrTitle">
+        <h2 id="simulateOcrTitle">1. Run simulated OCR</h2>
+        <p>
+          In a real system, the OCR engine receives the cleaned image and
+          returns character predictions with confidence scores. Here we simulate
+          that behaviour in JavaScript for a sample algebra question.
+        </p>
+        <button class="primary-button" id="runOcrButton" type="button">
+          Run simulated OCR
+        </button>
+        <p id="ocrHint" class="hint">
+          Click the button to see noisy OCR output and its cleaned version.
+        </p>
+      </section>
+
+      <section class="panel panel-outputs" aria-label="OCR outputs">
+        <div class="column">
+          <h2>2. Raw OCR output</h2>
+          <p class="small-text">
+            This is what a recogniser might return before any post-processing.
+          </p>
+          <pre id="rawOcr" class="text-box" aria-label="Raw OCR text"></pre>
+        </div>
+        <div class="column">
+          <h2>3. Cleaned mathematical question</h2>
+          <p class="small-text">
+            Here we correct spacing, obvious character errors, and formatting.
+          </p>
+          <pre
+            id="cleanOcr"
+            class="text-box"
+            aria-label="Cleaned OCR text"
+          ></pre>
+        </div>
+      </section>
+
+      <section class="panel panel-confidence" aria-labelledby="confidenceTitle">
+        <h2 id="confidenceTitle">4. OCR confidence and reliability</h2>
+        <p>
+          OCR systems attach a confidence score to each prediction. Low
+          confidence does not always mean the text is wrong, but it signals that
+          human review is important.
+        </p>
+        <div class="confidence-row">
+          <span>Overall OCR confidence:</span>
+          <span id="confidenceValue" class="confidence-value">–</span>
+        </div>
+        <div id="confidenceBar" class="confidence-bar" aria-hidden="true">
+          <div class="confidence-bar-fill" id="confidenceFill"></div>
+        </div>
+        <p id="confidenceMessage" class="confidence-message"></p>
+      </section>
+
+      <section class="panel panel-next">
+        <h2>5. Next step — user confirmation</h2>
+        <p>
+          The cleaned question is passed to the user for review. Any remaining
+          OCR mistakes can be corrected before the system attempts to solve the
+          maths.
+        </p>
+        <a
+          href="../step-3-user-confirmation/step-3-user-confirmation.html"
+          class="secondary-button"
+          >Go to Step 3 — User Confirmation</a
+        >
+      </section>
+    </main>
+
+    <footer class="step-footer">
+      <div class="container">
+        <p>Explainable AI Pipeline — OCR Extraction Module</p>
+      </div>
+    </footer>
+
+    <script src="../cursor.js"></script>
+    <script src="step-2-ocr-extraction.js"></script>
+  </body>
+</html>
+<nav class="step-timeline" aria-label="Pipeline timeline">
+  <ol>
+    <li>1. Image</li>
+    <li class="active">2. OCR</li>
+    <li>3. Confirm</li>
+    <li>4. Validate</li>
+    <li>5. Solve</li>
+  </ol>
+</nav>

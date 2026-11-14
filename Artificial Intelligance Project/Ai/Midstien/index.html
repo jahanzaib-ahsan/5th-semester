@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Math Solver</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <!-- KaTeX for beautiful LaTeX rendering in the solution card -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    ></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1 class="site-title">AI Math Solver</h1>
+        <p class="site-subtitle">
+          From image to step-by-step solution with full transparency
+        </p>
+      </div>
+    </header>
+
+    <main class="container main-layout">
+      <section class="wizard">
+        <nav class="wizard-timeline" aria-label="Processing timeline">
+          <ol>
+            <li class="active" data-step="1">1. Upload</li>
+            <li data-step="2">2. OCR &amp; Check</li>
+            <li data-step="3">3. Confirm</li>
+            <li data-step="4">4. AI Solution</li>
+          </ol>
+        </nav>
+
+        <section
+          class="wizard-step wizard-step-active"
+          id="step-1"
+          aria-labelledby="step1Title"
+        >
+          <h2 id="step1Title">Step 1 — Provide a question image</h2>
+          <p>Select an image that contains a single mathematics question.</p>
+
+          <div class="upload-area">
+            <label for="imageInput" class="upload-card">
+              <div class="upload-card-icon" aria-hidden="true">⬆</div>
+              <div class="upload-card-text">
+                <span class="upload-title">Click to upload question image</span>
+                <span class="upload-subtitle"
+                  >PNG or JPG • one question per image</span
+                >
+              </div>
+            </label>
+            <input
+              type="file"
+              id="imageInput"
+              accept="image/*"
+              class="upload-input"
+            />
+            <div class="upload-preview" id="uploadPreview">
+              <span id="uploadPlaceholder">No image selected yet.</span>
+              <img id="uploadedImage" alt="Selected math question" />
+            </div>
+          </div>
+
+          <div class="wizard-actions">
+            <button
+              type="button"
+              id="step1Next"
+              class="primary-button"
+              disabled
+            >
+              Next &mdash; Run OCR
+            </button>
+          </div>
+        </section>
+
+        <section class="wizard-step" id="step-2" aria-labelledby="step2Title">
+          <h2 id="step2Title">Step 2 — OCR extraction and maths check</h2>
+          <p>
+            The system returns raw OCR text and a cleaned version of the
+            question, as well as a judgement about whether this looks like a
+            mathematics problem.
+          </p>
+
+          <div class="two-column">
+            <div>
+              <h3>Raw OCR text</h3>
+              <pre id="rawOcr" class="text-box"></pre>
+            </div>
+            <div>
+              <h3>Cleaned question</h3>
+              <pre id="cleanOcr" class="text-box"></pre>
+            </div>
+          </div>
+
+          <div class="status-row">
+            <span>Does the system classify this as a maths question?</span>
+            <span id="isMathBadge" class="badge badge-muted">Pending</span>
+          </div>
+          <p id="mathMessage" class="hint"></p>
+
+          <div class="wizard-actions">
+            <button type="button" id="step2Back" class="secondary-button">
+              Back
+            </button>
+            <button
+              type="button"
+              id="step2Next"
+              class="primary-button"
+              disabled
+            >
+              Next &mdash; Confirm question
+            </button>
+          </div>
+        </section>
+
+        <section class="wizard-step" id="step-3" aria-labelledby="step3Title">
+          <h2 id="step3Title">Step 3 — User confirmation and editing</h2>
+          <p>
+            Review the recognised question. You can edit it if necessary and
+            then approve it for solving.
+          </p>
+
+          <label for="confirmedQuestion" class="field-label">
+            Recognised maths question
+          </label>
+          <textarea
+            id="confirmedQuestion"
+            class="question-textarea"
+            rows="5"
+          ></textarea>
+
+          <div class="wizard-actions">
+            <button type="button" id="step3Back" class="secondary-button">
+              Back
+            </button>
+            <button type="button" id="approveQuestion" class="primary-button">
+              Approve question
+            </button>
+          </div>
+
+          <p id="approvalMessage" class="hint"></p>
+
+          <div class="wizard-actions wizard-actions-bottom">
+            <button
+              type="button"
+              id="step3Next"
+              class="primary-button"
+              disabled
+            >
+              Next &mdash; View solution
+            </button>
+          </div>
+        </section>
+
+        <section class="wizard-step" id="step-4" aria-labelledby="step4Title">
+          <h2 id="step4Title">Step 4 — Step-by-step solution</h2>
+          <p>
+            The approved question is now processed to produce a transparent
+            reasoning trace.
+          </p>
+
+          <div class="question-summary">
+            <h3>Approved question</h3>
+            <pre id="finalQuestion" class="text-box"></pre>
+          </div>
+
+          <button type="button" id="solveButton" class="primary-button">
+            Solve question
+          </button>
+          <p id="apiStatus" class="hint" aria-live="polite"></p>
+
+          <div id="solutionCard" class="solution-card" aria-live="polite">
+            <div class="card-header">
+              <h3 class="card-title">Transparent Solution</h3>
+              <span id="solutionModelChip" class="model-chip"></span>
+            </div>
+
+            <div class="card-section">
+              <h4>Problem</h4>
+              <div id="cardProblem" class="card-body"></div>
+            </div>
+
+            <div class="card-section">
+              <h4>Strategy</h4>
+              <div id="cardReasoning" class="card-body"></div>
+            </div>
+
+            <div class="card-section">
+              <h4>Steps</h4>
+              <ol id="cardSteps" class="solution-list"></ol>
+            </div>
+
+            <div class="card-section final">
+              <h4>Final Answer</h4>
+              <div id="cardFinalLatex" class="answer-latex"></div>
+              <div id="cardFinalPlain" class="answer-plain"></div>
+            </div>
+
+            <div class="card-section">
+              <h4>Verification</h4>
+              <div id="cardVerification" class="card-body"></div>
+            </div>
+          </div>
+
+          <div class="wizard-actions wizard-actions-bottom">
+            <button type="button" id="step4Back" class="secondary-button">
+              Back
+            </button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="processingOverlay" class="processing-overlay" aria-hidden="true">
+      <div class="processing-dialog" role="status" aria-live="polite">
+        <div class="processing-spinner" aria-hidden="true"></div>
+        <p class="processing-title">Processing image&hellip;</p>
+        <p class="processing-subtitle">
+          Extracting the question text from your image.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      window.GEMINI_API_KEY_OVERRIDE =
+        "AIzaSyD3SS3TOSqGuJUldJkXawyJiOUSdzSbGLs";
+    </script>
+    <script src="cursor.js?v=3"></script>
+    <script src="main.js?v=3"></script>
+  </body>
+</html>
