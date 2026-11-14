@@ -1,0 +1,22 @@
+13 References:-
+[1] M. A. M. Farzaan et al., 2025. AI-Powered Incident Detection in Cloud Environments.
+[2] A. Akilala and M.-T. Kechadi, 2025. Cloud Digital Forensic Readiness: CLERMS Framework.
+[3] D. Alharthi and I. R. K. Garcia, 2025. Cloud Investigation Automation Framework (CIAF).
+[4] M. D. Prakasiwi, 2025. Cloud and IoT Forensics Acquisition Frameworks.
+[5] S. M. Shaffi et al., 2025. AI-Driven Security in Cloud Computing.
+[6] D. Alharthi and R. Yasaei, 2024. LLM-Powered Automated Cloud Forensics.
+[7] L. Chourasiya et al., 2025. System Log Analyzer Using LSTM and Transformer Networks.
+[8] M. James, 2025. Digital Forensics and Incident Response in Cloud-Based BPM Platforms.
+[9] S. Sachdeva and A. Ali, 2024. Machine Learning with Digital Forensics for DDoS Classification.
+[10] P. Purnaye and V. Kulkarni, 2024. A Comprehensive Study of Cloud Forensics.
+[11] S. Tatineni, 2024. AI-Infused Threat Detection and Incident Response in Cloud Security.
+[12] M. Mujahid, 2023. Cloud Forensics Challenges Overview.
+[13] A. Malik et al., 2024. Cloud Digital Forensics: Beyond Tools, Techniques & Challenges.
+[14] H. Al-mugern et al., 2024. Cloud Forensics Framework.
+[15] A. Alshabibi et al., 2024. Cloud Forensics Systematic Literature Review (PRISMA).
+[16] M. Pourvahab and G. Ekbatanifard, 2024. Investigating Cyber Attacks using SDN/Blockchain.
+[17] S. M. Rao and A. Jain, 2024. Advances in Malware Analysis and Detection in Cloud.
+[18] V. R. Thummala and S. Vashishtha, 2024. Incident Management in Hybrid Cloud.
+[19] O. Sapsai et al., 2024. Automated Incident Response Using SOAR Automation.
+[20] A. R. Pabbath Reddy, 2024. AI-Driven Approaches to Cloud Security Incident Management.
+[21] B. Cinar and J. P. Bharadiya, 2024. Cloud Computing Forensics Challenges.

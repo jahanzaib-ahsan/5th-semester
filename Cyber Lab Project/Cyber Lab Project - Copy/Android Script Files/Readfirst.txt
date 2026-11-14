@@ -1,0 +1,5 @@
+first you need to run config.sh to setup both your kali ip and phones ip 
+
+secondly you need to run setup.sh to make a connection with your phone 
+
+then run connect.sh that will try to connect to the phone and the last script control.sh will run automatically giving you the access of system
